@@ -24,14 +24,11 @@ Memora requires Python 3.9+ and PyTorch >= 2.0.
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/memora.git
-cd memora
+git clone https://github.com/Premkumar499/memora-package.git
+cd memora-package
 
 # Install in editable mode
 pip install -e .
-
-# Or install with dev & testing dependencies
-pip install -e ".[dev]"
 ```
 
 ---
@@ -92,7 +89,7 @@ memora hardware
 ### 2. View Training Run Reports
 Pretty-print detailed memory and throughput metrics from a saved run JSON:
 ```bash
-memora report memora_reports/memora_run_1794150945.json
+memora report <path-to-report.json>
 ```
 
 ### 3. Version Check
