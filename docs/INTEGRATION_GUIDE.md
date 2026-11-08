@@ -4,19 +4,23 @@ Memora is designed to be **hardware-agnostic and operating-system independent**.
 
 ---
 
-## 🚀 Option 1: Install Pre-Built Wheel (Fastest on Any Machine)
-
-You can copy the generated wheel file in `dist/` to any computer and install it with standard `pip`:
+## 🚀 Option 1: Install from PyPI (Recommended)
 
 ```bash
 # On the target computer:
-pip install memora-0.1.0-py3-none-any.whl
+pip install pymemora
 ```
 
-Or install directly from your Git repository:
+Or install from pre-built wheel:
 
 ```bash
-pip install git+https://github.com/your-username/memora.git
+pip install pymemora-0.1.0-py3-none-any.whl
+```
+
+Or install directly from GitHub:
+
+```bash
+pip install git+https://github.com/Premkumar499/memora-package.git
 ```
 
 ---

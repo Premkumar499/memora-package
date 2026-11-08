@@ -33,8 +33,8 @@ pip install pymemora
 Or install from source:
 
 ```bash
-git clone https://github.com/Premkumar499/memora.git
-cd memora
+git clone https://github.com/Premkumar499/memora-package.git
+cd memora-package
 pip install -e .
 ```
 
