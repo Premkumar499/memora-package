@@ -14,6 +14,8 @@ def test_format_bytes():
     assert format_bytes(1024 * 1024) == "1.00 MB"
     assert format_bytes(1024 * 1024 * 1024) == "1.00 GB"
     assert format_bytes(0) == "0.00 B"
+    assert format_bytes(None) == "N/A"
+    assert format_bytes(-1024) == "-1.00 KB"
 
 
 def test_resolve_device():
@@ -69,3 +71,4 @@ def test_mocked_cuda_detection(mock_mem, mock_name, mock_avail):
         assert dev.compute_capability == "8.6"
         assert dev.supports_bf16 is True
         assert dev.supports_fp16 is True
+

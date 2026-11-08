@@ -61,3 +61,4 @@ def image_dataset() -> TensorDataset:
     x = torch.randn(num_samples, 3, 16, 16)
     y = torch.randint(0, 4, (num_samples,))
     return TensorDataset(x, y)
+

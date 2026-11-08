@@ -122,11 +122,11 @@ class RunReport:
 
 def compare_runs(baseline: RunReport, optimized: RunReport) -> Dict[str, Any]:
     """Compare a baseline run with an optimized Memora run."""
-    b_mem = baseline.profiler_summary.get("overall_peak_memory_bytes", 0)
-    o_mem = optimized.profiler_summary.get("overall_peak_memory_bytes", 0)
+    b_mem = baseline.profiler_summary.get("overall_peak_memory_bytes") or 0
+    o_mem = optimized.profiler_summary.get("overall_peak_memory_bytes") or 0
 
-    b_thru = baseline.profiler_summary.get("mean_throughput_samples_per_sec", 0.0)
-    o_thru = optimized.profiler_summary.get("mean_throughput_samples_per_sec", 0.0)
+    b_thru = baseline.profiler_summary.get("mean_throughput_samples_per_sec") or 0.0
+    o_thru = optimized.profiler_summary.get("mean_throughput_samples_per_sec") or 0.0
 
     mem_saved_pct = round(((b_mem - o_mem) / b_mem * 100), 2) if b_mem > 0 else 0.0
     thru_speedup_pct = round(((o_thru - b_thru) / b_thru * 100), 2) if b_thru > 0 else 0.0
@@ -139,3 +139,4 @@ def compare_runs(baseline: RunReport, optimized: RunReport) -> Dict[str, Any]:
         "optimized_throughput": o_thru,
         "throughput_change_percent": thru_speedup_pct,
     }
+

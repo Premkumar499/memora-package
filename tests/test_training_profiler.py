@@ -26,3 +26,4 @@ def test_profiler_steps_and_summary():
     assert summary["total_steps"] == 3
     assert summary["mean_step_time_seconds"] > 0
     assert summary["mean_throughput_samples_per_sec"] > 0
+

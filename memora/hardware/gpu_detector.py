@@ -120,7 +120,10 @@ class GPUDetector:
             compute_cap = f"{major}.{minor}"
 
             # PyTorch CUDA memory API
-            free_mem, _ = torch.cuda.mem_get_info(idx)
+            try:
+                free_mem, _ = torch.cuda.mem_get_info(idx)
+            except Exception:
+                free_mem = None
 
             # Check bf16 / fp16 capabilities:
             # BF16 is natively supported on Ampere (Compute Capability >= 8.0)
@@ -215,3 +218,4 @@ class GPUDetector:
             system_ram_total=vm.total,
             system_ram_available=vm.available,
         )
+

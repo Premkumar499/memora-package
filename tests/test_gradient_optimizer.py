@@ -48,3 +48,4 @@ def test_should_step_boundaries():
 
     # Step 7 (8th batch, final batch of epoch) SHOULD step to flush remaining gradients
     assert opt.should_step(7, total_batches) is True
+

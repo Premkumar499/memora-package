@@ -178,3 +178,4 @@ class MemoryTracker:
             self.end_allocated = psutil.Process().memory_info().rss
             self.peak_allocated = self.end_allocated
             self.allocated_delta = max(0, self.end_allocated - self.start_allocated)
+

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import time
+import uuid
 from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple, Union
 import torch
 import torch.nn as nn
@@ -102,29 +104,45 @@ class Memora:
 
     def _infer_input_shape(self) -> Tuple[int, ...]:
         """Infer single-sample input shape from dataset or dataloader."""
-        if self.dataset is not None and len(self.dataset) > 0:
-            sample = self.dataset[0]
-            if isinstance(sample, (tuple, list)):
-                x = sample[0]
-            elif isinstance(sample, dict):
-                x = next(iter(sample.values()))
-            else:
-                x = sample
-            if isinstance(x, torch.Tensor):
-                return tuple(x.shape)
+        try:
+            if self.dataset is not None:
+                sample = self.dataset[0]
+                if isinstance(sample, (tuple, list)):
+                    x = sample[0]
+                elif isinstance(sample, dict):
+                    for k in ("input", "inputs", "x", "pixel_values", "features"):
+                        if k in sample:
+                            x = sample[k]
+                            break
+                    else:
+                        x = next(iter(sample.values()))
+                else:
+                    x = sample
+                if isinstance(x, torch.Tensor):
+                    return tuple(x.shape)
+        except Exception:
+            pass
 
         if self.dataloader is not None:
-            for batch in self.dataloader:
-                if isinstance(batch, (tuple, list)):
-                    x = batch[0]
-                elif isinstance(batch, dict):
-                    x = next(iter(batch.values()))
-                else:
-                    x = batch
-                if isinstance(x, torch.Tensor):
-                    # Slice off batch dim
-                    return tuple(x.shape[1:])
-                break
+            try:
+                for batch in self.dataloader:
+                    if isinstance(batch, (tuple, list)):
+                        x = batch[0]
+                    elif isinstance(batch, dict):
+                        for k in ("input", "inputs", "x", "pixel_values", "features"):
+                            if k in batch:
+                                x = batch[k]
+                                break
+                        else:
+                            x = next(iter(batch.values()))
+                    else:
+                        x = batch
+                    if isinstance(x, torch.Tensor):
+                        # Slice off batch dim
+                        return tuple(x.shape[1:])
+                    break
+            except Exception:
+                pass
 
         # Fallback default image shape (3, 32, 32)
         return (3, 32, 32)
@@ -151,8 +169,11 @@ class Memora:
         # 3. Batch Size Search
         if self.config.batch_size == "auto":
             max_b = self.config.max_batch_size
-            if self.dataset is not None and len(self.dataset) > 0:
-                max_b = min(max_b, len(self.dataset))
+            try:
+                if self.dataset is not None and len(self.dataset) > 0:
+                    max_b = min(max_b, len(self.dataset))
+            except TypeError:
+                pass
 
             batch_optimizer = BatchSizeOptimizer(
                 model=self.model,
@@ -212,8 +233,13 @@ class Memora:
             for m in self.model.modules()
         )
         drop_last = False
-        if has_bn and self.dataset is not None and len(self.dataset) % batch_size == 1 and len(self.dataset) > batch_size:
-            drop_last = True
+        try:
+            if self.dataset is not None and len(self.dataset) == 0:
+                raise ValueError("Dataset contains 0 samples. Cannot train with empty dataset.")
+            if has_bn and self.dataset is not None and len(self.dataset) % batch_size == 1 and len(self.dataset) > batch_size:
+                drop_last = True
+        except TypeError:
+            pass
 
         if self.dataset is not None:
             train_loader = DataLoader(
@@ -232,6 +258,9 @@ class Memora:
             )
         else:
             raise ValueError("No dataset or dataloader provided to Memora.")
+
+        if len(train_loader) == 0:
+            raise ValueError("DataLoader contains 0 batches. Ensure dataset has at least 1 sample.")
 
         val_loader = None
         if self.val_dataset is not None:
@@ -281,25 +310,55 @@ class Memora:
 
                 # Unpack batch
                 if isinstance(batch, (tuple, list)):
-                    inputs, targets = batch[0], batch[1]
+                    inputs = batch[0]
+                    targets = batch[1] if len(batch) > 1 else None
                 elif isinstance(batch, dict):
-                    inputs = batch["input"]
-                    targets = batch["target"]
+                    target_key = None
+                    for tk in ("target", "targets", "label", "labels", "y"):
+                        if tk in batch:
+                            target_key = tk
+                            break
+                    targets = batch[target_key] if target_key is not None else None
+
+                    input_keys = [k for k in batch if k != target_key]
+                    if len(input_keys) == 1:
+                        inputs = batch[input_keys[0]]
+                    else:
+                        inputs = {k: v for k, v in batch.items() if k != target_key}
                 else:
                     inputs = batch
                     targets = None
 
-                inputs = inputs.to(self.device)
-                if targets is not None:
+                if isinstance(inputs, dict):
+                    inputs = {k: v.to(self.device) if isinstance(v, torch.Tensor) else v for k, v in inputs.items()}
+                    sample_count = next((v.size(0) for v in inputs.values() if isinstance(v, torch.Tensor)), batch_size)
+                else:
+                    inputs = inputs.to(self.device)
+                    sample_count = inputs.size(0)
+
+                if targets is not None and isinstance(targets, torch.Tensor):
                     targets = targets.to(self.device)
 
                 # Forward pass with autocast
                 with self.precision_opt.autocast_context():
-                    outputs = self.model(inputs)
-                    if isinstance(outputs, (tuple, list)):
+                    if isinstance(inputs, dict):
+                        outputs = self.model(**inputs)
+                    else:
+                        outputs = self.model(inputs)
+
+                    if isinstance(outputs, dict):
+                        outputs = outputs.get("logits", next(iter(outputs.values())))
+                    elif hasattr(outputs, "logits"):
+                        outputs = outputs.logits
+                    elif isinstance(outputs, (tuple, list)):
                         outputs = outputs[0]
 
                     if targets is not None:
+                        # Auto-cast target dtype for CrossEntropyLoss vs Regression
+                        if isinstance(self.criterion, nn.CrossEntropyLoss) and targets.dtype != torch.long:
+                            targets = targets.long()
+                        elif isinstance(self.criterion, (nn.MSELoss, nn.L1Loss, nn.SmoothL1Loss)) and targets.dtype != torch.float:
+                            targets = targets.float()
                         loss = self.criterion(outputs, targets)
                     else:
                         loss = outputs.sum()
@@ -317,14 +376,14 @@ class Memora:
                     self.precision_opt.step(optimizer)
                     optimizer.zero_grad(set_to_none=True)
 
-                self.profiler.end_step(batch_size=inputs.size(0))
+                self.profiler.end_step(batch_size=sample_count)
                 final_loss = float(loss.item())
 
                 # Track simple accuracy if classification
-                if targets is not None and outputs.ndim > 1:
+                if targets is not None and isinstance(targets, torch.Tensor) and outputs.ndim > 1 and targets.dtype == torch.long:
                     preds = outputs.argmax(dim=-1)
                     correct_predictions += int((preds == targets).sum().item())
-                    total_samples += inputs.size(0)
+                    total_samples += sample_count
 
         total_training_duration = time.time() - epoch_start_time
         final_accuracy = round((correct_predictions / total_samples * 100), 2) if total_samples > 0 else None
@@ -335,7 +394,7 @@ class Memora:
             val_metrics = self.evaluate(val_loader)
 
         # Assemble full RunReport
-        run_id = f"memora_run_{int(time.time())}"
+        run_id = f"memora_run_{int(time.time())}_{uuid.uuid4().hex[:6]}"
         profiler_summary = self.profiler.summary()
 
         report = RunReport(

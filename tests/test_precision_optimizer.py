@@ -62,3 +62,4 @@ def test_backward_and_step_fp32(mlp_model):
     opt.backward(loss)
     opt.step(optimizer)
     assert any(p.grad is not None for p in mlp_model.parameters())
+

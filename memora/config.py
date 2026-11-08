@@ -123,3 +123,4 @@ class OptimizationRecommendation(BaseModel):
     memory_limit_bytes: int
     reasons: Dict[str, str] = Field(default_factory=dict)
     probe_results: Dict[str, Any] = Field(default_factory=dict)
+

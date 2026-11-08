@@ -46,3 +46,4 @@ def test_checkpoint_auto_decision_low_vram(mock_avail, mlp_model):
         )
         assert opt.is_enabled is True
         assert "6.0GB" in opt.reason
+

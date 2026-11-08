@@ -133,11 +133,20 @@ class BatchSizeOptimizer:
                 self.model.zero_grad(set_to_none=True)
                 outputs = self.model(inputs)
 
-                if isinstance(outputs, (tuple, list)):
+                # Extract logits if dictionary or model output object
+                if isinstance(outputs, dict):
+                    outputs = outputs.get("logits", next(iter(outputs.values())))
+                elif hasattr(outputs, "logits"):
+                    outputs = outputs.logits
+                elif isinstance(outputs, (tuple, list)):
                     outputs = outputs[0]
 
                 if self.target_shape is not None:
                     targets = torch.randn(batch_size, *self.target_shape, device=self.device)
+                elif isinstance(self.loss_fn, (nn.MSELoss, nn.L1Loss, nn.SmoothL1Loss, nn.HuberLoss)):
+                    targets = torch.randn_like(outputs)
+                elif isinstance(self.loss_fn, (nn.BCEWithLogitsLoss, nn.BCELoss)):
+                    targets = torch.rand_like(outputs)
                 elif outputs.ndim > 1:
                     num_classes = outputs.shape[-1]
                     targets = torch.randint(0, max(1, num_classes), (batch_size,), device=self.device)

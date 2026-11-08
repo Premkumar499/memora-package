@@ -85,3 +85,4 @@ class CheckpointOptimizer:
             "reason": self.reason,
             "trade_off": "Saves ~40-60% activation memory with ~20-30% compute re-computation overhead.",
         }
+

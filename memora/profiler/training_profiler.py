@@ -119,3 +119,4 @@ class TrainingProfiler:
             "overall_peak_memory_bytes": overall_peak_mem,
             "overall_peak_memory_str": format_bytes(overall_peak_mem),
         }
+

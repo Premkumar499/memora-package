@@ -33,3 +33,4 @@ def test_memory_tracker_context():
 
     assert tracker.duration_seconds > 0.0
     assert tracker.peak_allocated > 0
+

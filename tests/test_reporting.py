@@ -54,3 +54,4 @@ def test_compare_runs():
     diff = compare_runs(base, opt)
     assert diff["memory_saved_percent"] == 40.0
     assert diff["throughput_change_percent"] == 50.0
+

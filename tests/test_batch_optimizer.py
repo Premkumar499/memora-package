@@ -66,3 +66,4 @@ def test_batch_optimizer_handles_oom(mlp_model):
     with patch.object(optimizer, "_probe_trial", side_effect=fake_probe):
         result = optimizer.search()
         assert result.optimal_batch_size == 4
+

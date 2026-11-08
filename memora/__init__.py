@@ -21,3 +21,4 @@ __all__ = [
     "RunReport",
     "compare_runs",
 ]
+

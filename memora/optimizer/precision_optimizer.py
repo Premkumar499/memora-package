@@ -110,3 +110,4 @@ class PrecisionOptimizer:
             "uses_grad_scaler": self.use_scaler,
             "reason": self.reason,
         }
+

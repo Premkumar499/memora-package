@@ -1,0 +1,28 @@
+services:
+  memora:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: memora:latest
+    container_name: memora-app
+    volumes:
+      - ./memora_reports:/app/memora_reports
+    command: ["hardware"]
+    # Uncomment deploy block below for NVIDIA GPU acceleration
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  quickstart:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: memora:latest
+    container_name: memora-quickstart
+    volumes:
+      - ./memora_reports:/app/memora_reports
+    entrypoint: ["python", "examples/quickstart.py"]

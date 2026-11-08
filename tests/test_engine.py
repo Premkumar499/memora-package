@@ -71,3 +71,74 @@ def test_memora_with_custom_optimizer_and_loss(mlp_model, synthetic_dataset):
         )
         report = trainer.fit(epochs=1)
         assert report.training_metrics["total_steps"] > 0
+
+
+def test_memora_regression_mse_loss():
+    # Test regression with MSELoss
+    class Regressor(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.linear = nn.Linear(8, 1)
+
+        def forward(self, x):
+            return self.linear(x)
+
+    model = Regressor()
+    x = torch.randn(32, 8)
+    y = torch.randn(32, 1)
+    dataset = TensorDataset(x, y)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        trainer = Memora(
+            model=model,
+            dataset=dataset,
+            criterion=nn.MSELoss(),
+            batch_size="auto",
+            device="cpu",
+            report_output_dir=tmpdir,
+        )
+        report = trainer.fit(epochs=1)
+        assert report.training_metrics["total_steps"] > 0
+        assert report.training_metrics["final_loss"] >= 0.0
+
+
+def test_memora_dict_batch_support():
+    # Custom dataset yielding dictionary
+    class DictDataset:
+        def __init__(self):
+            self.data = [{"features": torch.randn(8), "labels": torch.randint(0, 2, (1,)).squeeze()} for _ in range(32)]
+
+        def __len__(self):
+            return len(self.data)
+
+        def __getitem__(self, idx):
+            return self.data[idx]
+
+    model = nn.Linear(8, 2)
+    dataset = DictDataset()
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        trainer = Memora(
+            model=model,
+            dataset=dataset,
+            batch_size=8,
+            device="cpu",
+            report_output_dir=tmpdir,
+        )
+        report = trainer.fit(epochs=1)
+        assert report.training_metrics["total_steps"] > 0
+
+
+def test_memora_empty_dataloader_raises():
+    import pytest
+    empty_dataset = TensorDataset(torch.empty(0, 8), torch.empty(0))
+    trainer = Memora(
+        model=nn.Linear(8, 2),
+        dataset=empty_dataset,
+        batch_size=4,
+        device="cpu",
+    )
+    with pytest.raises(ValueError, match="Dataset contains 0 samples|DataLoader contains 0 batches"):
+        trainer.fit(epochs=1)
+
+

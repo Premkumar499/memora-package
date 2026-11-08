@@ -8,8 +8,10 @@ from typing import Union
 import torch
 
 
-def format_bytes(num_bytes: Union[int, float], precision: int = 2) -> str:
+def format_bytes(num_bytes: Union[int, float, None], precision: int = 2) -> str:
     """Format bytes into human-readable string (B, KB, MB, GB, TB)."""
+    if num_bytes is None:
+        return "N/A"
     if num_bytes < 0:
         return f"-{format_bytes(-num_bytes, precision)}"
     for unit in ["B", "KB", "MB", "GB", "TB", "PB"]:
@@ -67,3 +69,4 @@ def set_seed(seed: int = 42) -> None:
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+

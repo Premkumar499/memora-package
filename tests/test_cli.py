@@ -16,3 +16,4 @@ def test_cli_hardware():
     result = runner.invoke(app, ["hardware"])
     assert result.exit_code == 0
     assert "Memora Hardware Discovery" in result.stdout
+
