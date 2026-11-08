@@ -1,7 +1,7 @@
 # Memora 🧠⚡
 
-[![PyPI version](https://img.shields.io/pypi/v/memora-package.svg?color=blue)](https://pypi.org/project/memora-package/)
-[![Python Version](https://img.shields.io/pypi/pyversions/memora-package.svg)](https://pypi.org/project/memora-package/)
+[![PyPI version](https://img.shields.io/pypi/v/pymemora.svg?color=blue)](https://pypi.org/project/pymemora/)
+[![Python Version](https://img.shields.io/pypi/pyversions/pymemora.svg)](https://pypi.org/project/pymemora/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 > **A memory-aware training optimization framework for PyTorch across any OS & hardware.**
@@ -27,14 +27,14 @@ Memora helps PyTorch developers use limited GPU memory (and CPU resources) more 
 Install the official package from **PyPI**:
 
 ```bash
-pip install memora-package
+pip install pymemora
 ```
 
 Or install from source:
 
 ```bash
-git clone https://github.com/Premkumar499/memora-package.git
-cd memora-package
+git clone https://github.com/Premkumar499/memora.git
+cd memora
 pip install -e .
 ```
 
