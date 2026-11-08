@@ -125,36 +125,15 @@ framework/
 │   │   └── report.py         # RunReport & baseline comparison
 │   └── utils/
 │       └── common.py         # Formatting, device resolution & seeds
-├── examples/
-│   ├── quickstart.py         # Minimal working example
-│   └── train_resnet.py       # Vision benchmark comparing Baseline vs Memora
-├── tests/
-│   ├── conftest.py
-│   ├── test_batch_optimizer.py
-│   ├── test_checkpoint_optimizer.py
-│   ├── test_cli.py
-│   ├── test_engine.py
-│   ├── test_gpu_detector.py
-│   ├── test_gradient_optimizer.py
-│   ├── test_memory_monitor.py
-│   ├── test_precision_optimizer.py
-│   ├── test_reporting.py
-│   └── test_training_profiler.py
+├── scripts/
+│   └── deploy_check.py       # Deployment health check smoke test
+├── docs/
+│   └── INTEGRATION_GUIDE.md  # Cross-computer integration guide
 ├── pyproject.toml            # PEP 517/621 packaging metadata
 ├── README.md                 # Project documentation
 ├── LICENSE                   # Apache 2.0 license
 ├── idea.md                   # Concept & architectural motivation
 └── plan.md                   # Development milestones & roadmap
-```
-
----
-
-## 🧪 Running the Test Suite
-
-Run all unit and integration tests across CPU and mocked GPU accelerators:
-
-```bash
-pytest
 ```
 
 ---

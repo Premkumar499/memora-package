@@ -1,4 +1,4 @@
-.PHONY: help install test check bench build docker-build docker-run clean
+.PHONY: help install check build docker-build docker-run clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -7,9 +7,7 @@ BIN = $(VENV)/bin
 help:
 	@echo "Memora Framework - Command Menu"
 	@echo "  make install       Install dependencies and Memora in editable mode"
-	@echo "  make test          Run full test suite with pytest"
 	@echo "  make check         Execute deployment health check smoke test"
-	@echo "  make bench         Run multi-workload benchmark suite"
 	@echo "  make build         Build wheel (.whl) and source dist (.tar.gz) in dist/"
 	@echo "  make docker-build  Build production Docker image"
 	@echo "  make docker-run    Run Memora container hardware check"
@@ -17,16 +15,10 @@ help:
 
 install:
 	$(BIN)/pip install --upgrade pip setuptools wheel
-	$(BIN)/pip install -e ".[dev]"
-
-test:
-	$(BIN)/pytest -v
+	$(BIN)/pip install -e .
 
 check:
 	$(BIN)/python scripts/deploy_check.py
-
-bench:
-	$(BIN)/python examples/benchmark_suite.py
 
 build: clean
 	$(BIN)/python -m build

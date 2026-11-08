@@ -22,12 +22,10 @@ COPY pyproject.toml README.md LICENSE /app/
 # Install dependencies (CPU PyTorch by default, will auto-detect CUDA if nvidia container toolkit is present)
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir psutil pydantic rich typer pytest
+    pip install --no-cache-dir psutil pydantic rich typer
 
 # Copy application source code
 COPY memora /app/memora
-COPY examples /app/examples
-COPY tests /app/tests
 
 # Install package in editable/distributable mode
 RUN pip install --no-cache-dir -e .

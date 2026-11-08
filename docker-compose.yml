@@ -17,13 +17,3 @@ services:
     #           count: all
     #           capabilities: [gpu]
 
-  quickstart:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: memora:latest
-    container_name: memora-quickstart
-    volumes:
-      - ./memora_reports:/app/memora_reports
-    entrypoint: ["python", "examples/quickstart.py"]
-
