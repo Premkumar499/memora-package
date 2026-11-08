@@ -1,9 +1,10 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
+
+# C extensions & packaging
 build/
 develop-eggs/
 dist/
@@ -21,28 +22,34 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.whl
+*.tar.gz
 
 # Virtual environments
 .venv/
 venv/
 ENV/
 env/
+.env
 
-# IDE
+# IDE & Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.DS_Store
 
-# Testing / coverage
+# Testing & Coverage
 .pytest_cache/
 .coverage
 htmlcov/
+.tox/
 
-# Output & reports
-*.json
-!tests/fixtures/*.json
-*.csv
+# Local run outputs & reports
+memora_reports/
+reports/
+benchmarks/*.json
+*.log
 runs/
 checkpoints/
-

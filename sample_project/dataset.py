@@ -15,3 +15,4 @@ def get_risk_dataset(num_samples: int = 1000, num_features: int = 32):
     train_data = TensorDataset(features[:800], labels[:800])
     val_data = TensorDataset(features[800:], labels[800:])
     return train_data, val_data
+

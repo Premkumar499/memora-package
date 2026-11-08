@@ -39,3 +39,4 @@ USER memorauser
 # Default command inspects hardware and verifies readiness
 ENTRYPOINT ["memora"]
 CMD ["hardware"]
+

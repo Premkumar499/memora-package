@@ -31,3 +31,4 @@ class RiskPredictionModel(nn.Module):
         h2 = self.block1(h1) + h1  # Residual skip connection
         h3 = self.block2(h2)
         return self.classifier(h3)
+

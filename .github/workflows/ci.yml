@@ -43,3 +43,4 @@ jobs:
         run: |
           memora version
           memora hardware
+

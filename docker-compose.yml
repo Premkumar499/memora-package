@@ -26,3 +26,4 @@ services:
     volumes:
       - ./memora_reports:/app/memora_reports
     entrypoint: ["python", "examples/quickstart.py"]
+

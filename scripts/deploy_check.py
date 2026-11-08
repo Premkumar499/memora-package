@@ -57,3 +57,4 @@ def run_health_check() -> int:
 
 if __name__ == "__main__":
     sys.exit(run_health_check())
+
