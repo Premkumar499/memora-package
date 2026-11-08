@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "memora"
+version = "0.1.0"
+description = "A memory-aware training optimization framework for PyTorch across any OS & hardware."
+readme = "README.md"
+authors = [{ name = "Memora Authors" }]
+license = { text = "Apache-2.0" }
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "torch>=2.0.0",
+    "psutil>=5.9.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+    "typer>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "torchvision>=0.15.0",
+    "ruff>=0.1.0",
+]
+gpu = [
+    "nvidia-ml-py>=12.535.0",
+]
+
+[project.scripts]
+memora = "memora.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["memora*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --strict-markers"
